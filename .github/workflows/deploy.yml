@@ -1,14 +1,12 @@
-name: Publish
+name: Retain
 
 on:
   push:
-    paths-ignore:
-      - README.md
   schedule:
     - cron:  '59 23 * * *'
 
 jobs:
-  latest_deploy:
+  retain:
     runs-on: ubuntu-latest
     steps:
     - name: Copy Repo Files
@@ -21,4 +19,4 @@ jobs:
     - name: Available platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
     - name: Build
-      run: retain.sh $GITHUB_ACTOR
+      run: bash retain.sh $GITHUB_ACTOR
