@@ -1,0 +1,24 @@
+name: Publish
+
+on:
+  push:
+    paths-ignore:
+      - README.md
+  schedule:
+    - cron:  '59 23 * * *'
+
+jobs:
+  latest_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Copy Repo Files
+      uses: actions/checkout@v2
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: crazy-max/ghaction-docker-buildx@v1
+      with:
+        buildx-version: latest
+    - name: Available platforms
+      run: echo ${{ steps.buildx.outputs.platforms }}
+    - name: Build
+      run: retain.sh $GITHUB_ACTOR
