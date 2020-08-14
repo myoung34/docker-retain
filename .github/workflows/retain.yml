@@ -1,7 +1,6 @@
 name: Retain
 
 on:
-  push:
   schedule:
     - cron:  '59 23 * * *'
 
