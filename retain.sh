@@ -1,10 +1,11 @@
 #!/bin/bash
 user=$1
+starting_char=$2
 page_size=100
 
 [[ ! -d tmp ]] && mkdir tmp
 
-for repo in $(curl -sL "https://hub.docker.com/v2/repositories/${user}?page_size=${page_size}" | jq -r .results[].name); do 
+for repo in $(curl -sL "https://hub.docker.com/v2/repositories/${user}?page_size=${page_size}" | jq -r ".results[] | select(.name | startswith(\"$starting_char\")) | .name"); do 
   tags=$(curl -sL "https://hub.docker.com/v2/repositories/${user}/${repo}/tags?page_size=${page_size}" | jq -r '.results[] | .name')
   for tag in ${tags}; do
     tags=$(curl -sL "https://hub.docker.com/v2/repositories/${user}/${repo}/tags/${tag}?page_size=${page_size}")
@@ -15,6 +16,6 @@ for repo in $(curl -sL "https://hub.docker.com/v2/repositories/${user}?page_size
     mkdir -p "${tempdir}"
     tempfile="${tempdir}/${repo}_${tag}"
     echo "FROM ${user}/${repo}:${tag}" >"${tempfile}"
-    docker buildx build -t "$(uuidgen)" --output "type=image,push=false" -f "${tempfile}" --platform "${platforms}" .
+    docker buildx build -t "$(uuidgen)" --output "type=image,push=false" -f "${tempfile}" --platform "${platforms}" . || :
   done
 done

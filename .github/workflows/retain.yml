@@ -3,10 +3,16 @@ name: Retain
 on:
   schedule:
     - cron:  '59 23 * * *'
+  push:
+    branches:
+      - master
 
 jobs:
   retain:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        startingChar: ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
     steps:
     - name: Copy Repo Files
       uses: actions/checkout@v2
@@ -18,4 +24,4 @@ jobs:
     - name: Available platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
     - name: Build
-      run: bash retain.sh $GITHUB_ACTOR
+      run: bash retain.sh $GITHUB_ACTOR ${{ matrix.startingChar }}
